@@ -1,5 +1,6 @@
 import Icon from "./Icon";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { useState } from "react";
 
 const style = {
   width: "300px",
@@ -14,55 +15,65 @@ const style = {
 
 const list = [
   {
-    id: 1,
+    id: "1",
     title: "1. Read books",
   },
   {
-    id: 2,
-    title: "2.  Go to work",
+    id: "2",
+    title: "2. Go to work",
   },
   {
-    id: 3,
+    id: "3",
     title: "3. Go to home",
   },
   {
-    id: 4,
+    id: "4",
     title: "4. Eat mellon",
   },
   {
-    id: 5,
+    id: "5",
     title: "5. Drink coffee",
   },
 ];
 
 export default function App() {
+  const [dragList, setDragList] = useState(list);
+
+  function handleDragEnd(result: any) {
+    if (!result.destination) {
+      return;
+    }
+    const items = Array.from(dragList);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    setDragList(items);
+  }
+
   return (
     <div>
-      <DragDropContext onDragEnd={(...props) => console.log(props)}>
-        <Droppable droppableId="droppable-1">
-          {(provided, _) => (
-            <div ref={provided.innerRef} {...provided.droppableProps}>
-              {list.map((item, i) => {
+      <DragDropContext onDragEnd={handleDragEnd}>
+        <Droppable droppableId="tasks">
+          {(provided) => (
+            <ul {...provided.droppableProps} ref={provided.innerRef}>
+              {dragList.map(({ id, title }, index) => {
                 return (
-                  <Draggable
-                    key={item.id}
-                    draggableId={"draggable-" + item.id}
-                    index={i}
-                  >
-                    {(provided, _) => (
-                      <div
-                        style={style}
-                        ref={provided.innerRef}
+                  <Draggable key={id} draggableId={id} index={index}>
+                    {(provided) => (
+                      <li
                         {...provided.draggableProps}
+                        ref={provided.innerRef}
+                        style={style}
                       >
                         <Icon {...provided.dragHandleProps} />
-                        <span>{item.title}</span>
-                      </div>
+                        <span>{title}</span>
+                      </li>
                     )}
                   </Draggable>
                 );
               })}
-            </div>
+              {provided.placeholder}
+            </ul>
           )}
         </Droppable>
       </DragDropContext>
