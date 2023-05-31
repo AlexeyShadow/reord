@@ -1,5 +1,5 @@
 import Icon from "./Icon";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useState } from "react";
 
 const style = {
@@ -11,6 +11,7 @@ const style = {
   alignItems: "center",
   gap: "3rem",
   fontSize: "24px",
+  margin: "20px",
 };
 
 const list = [
@@ -28,7 +29,7 @@ const list = [
   },
   {
     id: "4",
-    title: "4. Eat mellon",
+    title: "4. Eat melon",
   },
   {
     id: "5",
@@ -40,9 +41,6 @@ export default function App() {
   const [dragList, setDragList] = useState(list);
 
   function handleDragEnd(result: any) {
-    if (!result.destination) {
-      return;
-    }
     const items = Array.from(dragList);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
@@ -61,6 +59,7 @@ export default function App() {
                   <Draggable key={id} draggableId={id} index={index}>
                     {(provided) => (
                       <li
+                        id={id}
                         {...provided.draggableProps}
                         ref={provided.innerRef}
                         style={style}
