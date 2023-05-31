@@ -37,6 +37,29 @@ const list = [
   },
 ];
 
+const grid = 8;
+
+const getItemStyle = (isDragging: any, draggableStyle: any) => ({
+  // some basic styles to make the items look a bit nicer
+  listStyle: "none",
+  userSelect: "none",
+  padding: grid * 2,
+  margin: `0 0 ${grid}px 0`,
+
+  // change background colour if dragging
+  background: isDragging ? "lightgreen" : "grey",
+
+  // styles we need to apply on draggables
+  ...draggableStyle,
+});
+
+const getListStyle = (isDraggingOver: any) => ({
+  listStyle: "none",
+  background: isDraggingOver ? "lightblue" : "lightgrey",
+  padding: grid,
+  width: 250,
+});
+
 export default function App() {
   const [dragList, setDragList] = useState(list);
 
@@ -52,17 +75,24 @@ export default function App() {
     <div>
       <DragDropContext onDragEnd={handleDragEnd}>
         <Droppable droppableId="tasks">
-          {(provided) => (
-            <ul {...provided.droppableProps} ref={provided.innerRef}>
+          {(provided, snapshot) => (
+            <ul
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              style={getListStyle(snapshot.isDraggingOver)}
+            >
               {dragList.map(({ id, title }, index) => {
                 return (
                   <Draggable key={id} draggableId={id} index={index}>
-                    {(provided) => (
+                    {(provided, snapshot) => (
                       <li
                         id={id}
                         {...provided.draggableProps}
                         ref={provided.innerRef}
-                        style={style}
+                        style={getItemStyle(
+                          snapshot.isDragging,
+                          provided.draggableProps.style
+                        )}
                       >
                         <Icon {...provided.dragHandleProps} />
                         <span>{title}</span>
